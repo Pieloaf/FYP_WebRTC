@@ -8,4 +8,4 @@ This will be achieved by first creatinga basic webrtc connection using [this](ht
 ## Entries
 ### 26/01/2022
 I started by cloning the RTC Multiconnect repo and testing it in my broswer. I then looked at chrome://webrtc-internals to see how the data was being sent and received.
-![Initial Test of RTCMultiConnection](../images/FirstTest.png)
+![Initial Test of RTCMultiConnection](./images/FirstTest.png)
