@@ -1,11 +1,18 @@
 # Log Book
+## Table of Contents
+- [Log Book](#log-book)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Entries](#entries)
+ 
 ---
 ## Introduction
 
-This log book is going to describe my research and work done in creating a videoconferencing system using WebRTC
-This will be achieved by first creatinga basic webrtc connection using [this](https://github.com/muaz-khan/RTCMultiConnection) repo for reference. A stun and turn server will then be added along with a GUI and authentication
+This log book is going to document my research and work done in creating a video conferencing system using the WebRTC API and a JS framework for the front-end.
+This will be achieved by using [this](https://github.com/muaz-khan/RTCMultiConnection) repo as a base for the project and bulding a GUI upon it. STUN and TURN servers will then be added to support the WebRTC connection behind NATs and firewalls.
+
 ---
+
 ## Entries
-### 26/01/2022
-I started by cloning the RTC Multiconnect repo and testing it in my broswer. I then looked at chrome://webrtc-internals to see how the data was being sent and received.
-![Initial Test of RTCMultiConnection](./images/FirstTest.png)
+- January
+  - [Log 1 - 26/01/2022](./entries/jan/26012022.md)
