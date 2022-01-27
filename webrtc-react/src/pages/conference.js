@@ -1,135 +1,117 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { Toolbar } from "../components/toolbar";
 import { VideoContainer } from "../components/videosContainer";
 import { videoConstraints } from "../data/config";
 
-
-export class Conference extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            resolution: 0,
-            isMicOn: true,
-            isCamOn: true,
-            streams: [],
-        };
-        this.connection = new window.RTCMultiConnection();
-    }
-
-    componentDidMount() {
-        this.connection = {
-            ...this.state.connection,
-            socketURL: "/",
-            socketMessageEvent: "webrtc-react-app",
-            mediaConstraints: {
-                video: videoConstraints[this.state.resolution],
-                audio: true,
-            },
-            session: {
-                audio: this.state.isMicOn,
-                video: this.state.isCamOn,
-            },
-            onstream: (event) => {
-                this.setState({
-                    streams: [...this.state.streams, event],
-                })
-            }
-
-        }
-
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.resolution !== prevState.resolution) {
-            this.connection.mediaConstraints.video = videoConstraints[this.state.resolution];
-
-        }
-
-        if (this.state.connection.session !== prevState.connection.session) {
-            this.connection.session = {
-                audio: this.state.isMicOn,
-                video: this.state.isCamOn,
-            };
-        }
-    }
-
-
-
-    // stuff = () => {
-
-    //     connection.sdpConstraints.mandatory = {
-    //         OfferToReceiveAudio: true,
-    //         OfferToReceiveVideo: true,
-    //     };
-
-
-    //     connection.mediaConstraints = {
-    //         video: videoConstraints[this.state.resolution],
-    //         audio: true,
-    //     };
-
-    //     var bitrates = 512;
-    //     var CodecsHandler = connection.CodecsHandler;
-
-    //     connection.processSdp = function (sdp) {
-    //         var codecs = "vp9";
-
-    //         if (codecs.length) {
-    //             sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
-    //         }
-
-    //         if (resolutions === "HD") {
-    //             sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
-    //                 audio: 128,
-    //                 video: bitrates,
-    //                 screen: bitrates,
-    //             });
-
-    //             sdp = CodecsHandler.setVideoBitrates(sdp, {
-    //                 min: bitrates * 8 * 1024,
-    //                 max: bitrates * 8 * 1024,
-    //             });
-    //         }
-
-    //         if (resolutions === "Ultra-HD") {
-    //             sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
-    //                 audio: 128,
-    //                 video: bitrates,
-    //                 screen: bitrates,
-    //             });
-
-    //             sdp = CodecsHandler.setVideoBitrates(sdp, {
-    //                 min: bitrates * 8 * 1024,
-    //                 max: bitrates * 8 * 1024,
-    //             });
-    //         }
-
-    //         return sdp;
-    //     };
-    //     // https://www.rtcmulticonnection.org/docs/iceServers/
-    //     // use your own TURN-server here!
-    //     connection.iceServers = [
-    //         {
-    //             urls: [
-    //                 "stun:stun.l.google.com:19302",
-    //                 "stun:stun1.l.google.com:19302",
-    //                 "stun:stun2.l.google.com:19302",
-    //                 "stun:stun.l.google.com:19302?transport=udp",
-    //             ],
-    //         },
-    //     ];
-    // }
-
-    //get roomID from param props
-
-    // start conference button
-    render() {
-        return (
-            <div>
-                <h1>Conference </h1>
-                <VideoContainer streams={this.state.streams} />
-                <Toolbar />
-            </div >
-        );
-    }
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
 }
+
+const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+
+
+export const Conference = () => {
+    const [streamOpts, setStreamOpts] = useState({
+        resolution: 0,
+        bitrate: 512,
+        isMicOn: true,
+        isCamOn: true,
+    })
+    const [streams, setStreams] = useState([]);
+
+    const prevStreamOpts = usePrevious(streamOpts);
+    const connection = useRef(new window.RTCMultiConnection());
+    var roomID = useParams().roomID;
+
+    useEffect(() => {
+        function initConnection() {
+            connection.current.socketURL = "https://localhost:9001/"
+            connection.current.socketMessageEvent = "webrtc-react-app"
+            connection.current.mediaConstraints = {
+                video: videoConstraints[streamOpts.resolution],
+                audio: true,
+            }
+            connection.current.session = {
+                audio: streamOpts.isMicOn,
+                video: streamOpts.isCamOn,
+            }
+            connection.current.onstream = (event) => {
+                console.log(event);
+                setStreams([...streams.streams, event.stream])
+            }
+            connection.current.processSdp = (sdp) => {
+                let CodecsHandler = connection.current.CodecsHandler;
+                var codecs = 'vp8';
+
+                sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
+
+                sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
+                    audio: 128,
+                    video: streamOpts.bitrate,
+                    screen: streamOpts.bitrate,
+                });
+
+                sdp = CodecsHandler.setVideoBitrates(sdp, {
+                    min: streamOpts.bitrate * 8 * 1024,
+                    max: streamOpts.bitrate * 8 * 1024,
+                });
+
+                return sdp;
+            }
+            connection.current.iceServers = [{
+                'urls': [
+                    'stun:stun.l.google.com:19302',
+                    'stun:stun1.l.google.com:19302',
+                    'stun:stun2.l.google.com:19302',
+                    'stun:stun.l.google.com:19302?transport=udp'
+                ]
+            }]
+        };
+        //on first render call initConnection
+        if (streams.length === 0) {
+            initConnection();
+        }
+        //on every render check if streamOpts changed
+        if (prevStreamOpts !== streamOpts) {
+            connection.current.mediaConstraints = {
+                video: videoConstraints[streamOpts.resolution],
+                audio: true,
+            }
+            connection.current.session = {
+                audio: streamOpts.isMicOn,
+                video: streamOpts.isCamOn,
+            }
+        }
+    });
+
+    return (
+        <div>
+            <h1>Conference </h1>
+            <VideoContainer streams={streams} />
+            {streams.length ? <Toolbar /> : <button onClick={() => {
+                roomID = roomID === undefined ? genRanHex(6) : roomID;
+                connection.current.open(roomID, function (isRoomOpened, roomid, error) {
+                    if (isRoomOpened === true) {
+                        console.log('conference started')
+                        // showRoomURL(connection.sessionid);
+                    }
+                    else {
+                        // disableInputButtons(true);
+                        if (error === 'Room not available') {
+                            alert('Someone already created this room. Please either join or create a separate room.');
+                            return;
+                        }
+                        alert(error);
+                    }
+                })
+                console.log(connection.current.streams)
+            }}>{roomID === undefined ? `Open Room` : `Join Room`}</button>}
+        </div >
+    );
+}
+
