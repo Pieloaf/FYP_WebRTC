@@ -1,0 +1,16 @@
+{
+  "name": "express-server",
+  "version": "0.0.1",
+  "description": "express server for RTCMultiConnect",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pieloaf",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "rtcmulticonnection-server": "^1.3.2",
+    "socket.io": "^4.4.1"
+  }
+}
