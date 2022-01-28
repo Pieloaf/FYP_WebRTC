@@ -16,3 +16,5 @@ This will be achieved by using [this](https://github.com/muaz-khan/RTCMultiConne
 ## Entries
 - January
   - [Log 1 - 26/01/2022](./entries/jan/26012022.md)
+  - [Log 2 - 27/01/2022](./entries/jan/27012022.md)
+  - [Log 3 - 28/01/2022](./entries/jan/28012022.md)
