@@ -1,15 +1,16 @@
 import './App.css';
-import { Routes, Route, Link } from 'react-router-dom';
-import { Conference } from './pages/conference';
+import { Routes, Route } from 'react-router-dom';
+import { Room } from './pages/room';
 import { HomePage } from './pages/homepage';
+import { RoomManager } from './pages/roommanager';
 
 function App() {
   return (
     <div className="App">
       <Routes>
         <Route exact path="/" element={<HomePage />} />
-        <Route path="/conference" element={<Conference />} />
-        <Route path="/conference/:roomID" element={<Conference />} />
+        <Route path="/room/:roomID" element={<Room />} />
+        <Route path="/room" element={<RoomManager />} />
       </Routes>
     </div>
   );

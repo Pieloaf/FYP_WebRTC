@@ -33,7 +33,7 @@ app.use(cors());
 
 app.use(express.static('build'));
 app.get('/', (req, res) => {
-    res.sendFile('./index.html', { root: __dirname + '/build' });
+    res.sendFile('index.html', { root: __dirname + '../webrtc-react/build' });
 })
 
 var server = https.createServer(ServerOptions, app)
