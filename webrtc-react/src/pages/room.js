@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Toolbar } from "../components/toolbar";
-import { VideoContainer } from "../components/videosContainer";
+import { StreamContainer } from "../components/videosContainer";
 import { iceServers, videoConstraints } from "../data/config";
 import history from '../history';
+import styled from "styled-components";
+import mixins from "../styles/mixins";
+import theme from "../styles/theme";
 
 function usePrevious(value) {
     const ref = useRef();
@@ -13,14 +16,57 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+const StreamsContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: -webkit-fill-available;
+    padding: 0 32px 64px;
+`;
+
+const RoomWrapper = styled.div`
+    display: flex;
+    width: -webkit-fill-available;
+    height: 100vh;
+    padding-bottom: ;
+    background-color: ${theme.colours.black};
+    @media screen and (max-width: ${theme.breakpoints.mobile}) {
+        align-items: center;
+        justify-content: center;
+    }
+`;
+
+const ChatWrapper = styled.div`
+    margin-left:auto;
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    min-width: 200px;
+    height: 100%;
+    background-color: ${theme.colours.darkBlue};
+    @media screen and (max-width: ${theme.breakpoints.mobile}) {
+        display:none;
+        position: absolute;
+        left: 0;
+        width: 0vw;
+        & .active {
+            display: flex;
+        }
+`;
 
 
 export const Room = () => {
     return (
-        <div>
-            test
-        </div>
+        <RoomWrapper>
+            <StreamsContainer>
+                <StreamContainer />
+                <StreamContainer />
+            </StreamsContainer>
+            <ChatWrapper />
+            <Toolbar />
+        </RoomWrapper>
     )
     // const [streamOpts, setStreamOpts] = useState({
     //     resolution: 0,
@@ -91,7 +137,7 @@ export const Room = () => {
 
     // const handleOpenRoom = () => {
     //     let roomid = genRanHex(16);
-    //     history.push(`/room/${roomid}?open=true`);
+    //     history.push(`/ room / ${ roomid }?open = true`);
     // }
     // // if (open) {
     // //     return (

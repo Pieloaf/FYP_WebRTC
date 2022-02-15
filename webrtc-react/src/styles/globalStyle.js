@@ -8,7 +8,13 @@ const GlobalStyle = createGlobalStyle`
             color: ${theme.colours.darkBlue};
         }
     }
-    li {
+    ul
+    {
+        margin: 0;
+        padding: 0;
+    }
+
+     li {
         list-style: none;
     }
 `

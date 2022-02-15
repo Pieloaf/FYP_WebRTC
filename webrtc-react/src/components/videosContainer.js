@@ -1,33 +1,23 @@
 import React from "react";
+import styled from "styled-components";
+import theme from "../styles/theme";
 
-export class VideoContainer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
+const VideoContainer = styled.div`
+    width: 640px;
+    height: 480px;
+    background-color: red;
+    border: 1px solid #06d6a0;
+    
+    @media screen and (max-width: ${theme.breakpoints.tablet}) {
+        width: 100%;
     }
+`;
 
-    componentDidMount() {
-        this.props.streams.forEach(stream => {
-            stream.mediaElement.removeAttribute("src");
-            stream.mediaElement.removeAttribute("srcObject");
-            stream.mediaElement.muted = true;
-            stream.mediaElement.volume = 0;
+export const StreamContainer = () => {
 
-        })
-    }
+    return (
+        <VideoContainer>
+        </VideoContainer>
+    )
 
-    render() {
-        return (
-            <div className="videos-container" >
-                {this.props.streams.map(stream => {
-                    return (
-                        <video key={stream.streamid} autoPlay playsInline muted={stream.type === "local"}>
-                            <source src={stream.stream} />
-                        </video>
-                    )
-                })}
-            </div>
-        );
-    }
 }

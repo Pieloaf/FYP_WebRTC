@@ -30,6 +30,12 @@ const theme = {
         slight: `7px`
     },
 
+    breakpoints: {
+        mobile: `512px`,
+        tablet: `1024px`,
+        desktop: `1280px`,
+    },
+
 
 }
 

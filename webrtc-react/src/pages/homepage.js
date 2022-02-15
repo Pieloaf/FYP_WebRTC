@@ -69,7 +69,6 @@ const Features = styled.div`
             align-items: center;
         }
         > li {
-            list-style: none;
             margin: 16px
             width: 128px;
             height: 128px;
@@ -119,7 +118,7 @@ export const HomePage = () => {
                     <StyledInput placeholder="Name" width="300px" />
                     <StyledInput placeholder="Room ID" width="400px" />
                     <StyledButton bgColor={theme.colours.teal}>
-                        <Link to={`/ room ? room = ${123}& name=${123} `}>
+                        <Link to={`/room/${123}`}>
                             Join room
                         </Link>
                     </StyledButton>
@@ -127,9 +126,9 @@ export const HomePage = () => {
                 <Features>
                     <h1> Features </h1>
                     <ul>
-                        <li><FaPhone /></li>
-                        <li><FaPhone /></li>
-                        <li><FaPhone /></li>
+                        <li>Live Video Chat</li>
+                        <li>Peer to Peer Connection</li>
+                        <li>Beep Boop</li>
                     </ul>
                 </Features>
             </Body>
