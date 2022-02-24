@@ -2,22 +2,25 @@ import React from "react";
 import styled from "styled-components";
 import theme from "../styles/theme";
 
-const VideoContainer = styled.div`
-    width: 640px;
-    height: 480px;
-    background-color: red;
-    border: 1px solid #06d6a0;
-    
-    @media screen and (max-width: ${theme.breakpoints.tablet}) {
-        width: 100%;
-    }
+const StyledVideoContainer = styled.div`
+        
+        height: fit-content;
+        background-color: red;
+        border: 1px solid #06d6a0;
+        
+        @media screen and (max-width: ${theme.breakpoints.tablet}) {
+            width: 100%;
+        }
+        width: -webkit-fill-available;
+        > video {
+            width: -webkit-fill-available;
+        }
 `;
 
-export const StreamContainer = () => {
+export const VideoContainer = (props) => {
 
-    return (
-        <VideoContainer>
-        </VideoContainer>
-    )
+    return (<>
+        {[props.src]}
+    </>);
 
 }

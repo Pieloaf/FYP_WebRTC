@@ -26,14 +26,24 @@ const ServerOptions = {
     ca: ""
 };
 
+const allowedOrigins = ['https://localhost:9001', 'http://localhost:3000'];
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
 
 app.enable('trust proxy');
 app.use(cors());
 
 
 app.use(express.static('build'));
-app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: __dirname + '../webrtc-react/build' });
+app.get('/*', (req, res) => {
+    res.sendFile('index.html', { root: __dirname + '/build' });
 })
 
 var server = https.createServer(ServerOptions, app)

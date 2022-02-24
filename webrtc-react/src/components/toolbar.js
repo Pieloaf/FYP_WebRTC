@@ -1,5 +1,5 @@
 import React from "react";
-import { FaShare, FaCamera, FaMicrophone, FaPhone, FaFacebookMessenger } from "react-icons/fa";
+import { FaShare, FaCamera, FaMicrophone, FaPhone, FaFacebookMessenger, FaCircle } from "react-icons/fa";
 import styled from "styled-components";
 import theme from "../styles/theme";
 import mixins from "../styles/mixins";
@@ -66,6 +66,9 @@ export const Toolbar = () => {
                     </ToolbarItem>
                     <ToolbarItem onClick={toggleChat}>
                         <FaFacebookMessenger />
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <FaCircle />
                     </ToolbarItem>
                     <ToolbarItem color={theme.colours.pink}>
                         <FaPhone />
