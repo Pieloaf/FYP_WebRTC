@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPhone } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -109,6 +109,22 @@ const Footer = styled.div`
 }`;
 
 export const HomePage = () => {
+    const [Name, setName] = useState("");
+    const [roomID, setRoomID] = useState("");
+
+    const updateRoomID = (e) => {
+        setRoomID(e.target.value);
+    }
+
+    const getRoomID = (e) => {
+        if (!roomID.length) {
+            //generate random base64 string
+            return btoa(Math.random().toString());
+        }
+
+        return roomID;
+    }
+
     return (
         <LandingContainer>
             <NavBar />
@@ -116,9 +132,9 @@ export const HomePage = () => {
                 <MidContainer>
                     <Title>Video Conferencing</Title>
                     <StyledInput placeholder="Name" width="300px" />
-                    <StyledInput placeholder="Room ID" width="400px" />
+                    <StyledInput placeholder="Room ID" width="400px" onChange={updateRoomID} />
                     <StyledButton bgColor={theme.colours.teal}>
-                        <Link to={`/room/${123}`}>
+                        <Link to={`/room/${getRoomID()}`}>
                             Join room
                         </Link>
                     </StyledButton>
