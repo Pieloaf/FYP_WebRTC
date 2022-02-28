@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const NavDiv = styled.div`
@@ -18,21 +18,27 @@ const NavDiv = styled.div`
 `;
 
 export const NavBar = () => {
-
+    const [scrolled, setScrolled] = useState(false);
     const navRef = useRef(null);
 
     useEffect(() => {
-        window.addEventListener("scroll", () => {
+        const handleScroll = () => {
             if (window.scrollY > 150) {
-                navRef.current.classList.add("scrolled");
+                setScrolled(true);
             } else {
-                navRef.current.classList.remove("scrolled");
+                setScrolled(false);
             }
-        })
+        }
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        }
     }, []);
 
     return (
-        <NavDiv ref={navRef}>
+        <NavDiv ref={navRef} className={scrolled ? "scrolled" : ""}>
             <h1>NavBar</h1>
         </NavDiv>
     )
