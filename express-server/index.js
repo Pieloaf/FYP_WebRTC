@@ -3,8 +3,7 @@ const app = express();
 const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
-
-const ioServer = require('socket.io');
+const io = require('socket.io');
 const RTCMultiConnectionServer = require('rtcmulticonnection-server');
 
 const jsonPath = {
@@ -26,7 +25,7 @@ const ServerOptions = {
     ca: ""
 };
 
-const allowedOrigins = ['https://localhost:9001', 'http://localhost:3000'];
+const allowedOrigins = ['https://localhost:9001', 'https://localhost:3000'];
 const corsOptions = {
     origin: function (origin, callback) {
         if (allowedOrigins.indexOf(origin) !== -1) {
@@ -38,7 +37,7 @@ const corsOptions = {
 }
 
 app.enable('trust proxy');
-app.use(cors());
+app.use(cors(corsOptions));
 
 
 app.use(express.static('build'));
@@ -55,7 +54,7 @@ server = server.listen(PORT, function () {
 
 server.on('error', (err) => { console.log(err) })
 
-ioServer(server).on('connection', function (socket) {
+io(server, { cors: true, origins: '*:*' }).on('connection', function (socket) {
     RTCMultiConnectionServer.addSocket(socket, config);
 
     // ----------------------
