@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Toolbar } from "../components/toolbar";
-import { VideoContainer } from "../components/videosContainer";
 import { iceServers, videoConstraints } from "../data/config";
 import history from '../history';
 import styled from "styled-components";
@@ -16,17 +15,12 @@ function usePrevious(value) {
     return ref.current;
 }
 
-// const GridContainer = styled.div`
-//     ${mixins.flexCentre};
-//     width: -webkit-fill-available;
-//     `;
-
 const VideoGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
     grid-gap: 24px;
     padding: 24px 24px 64px;
-    width: -webkit-fill-available;
+    ${mixins.fill};
     place-items: center;
     @media screen and (max-width: ${theme.breakpoints.tablet}) {
         grid-template-columns: repeat(auto-fill, minmax(40%, 1fr));
@@ -34,11 +28,14 @@ const VideoGrid = styled.div`
     @media screen and (max-width: ${theme.breakpoints.mobile}) {
         grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
     }
+    > video {
+        width: 100%;
+    }
 `;
 
 const RoomWrapper = styled.div`
     display: flex;
-    width: -webkit-fill-available;
+    ${mixins.fill};
     height: 100vh;
     padding-bottom: ;
     background-color: ${theme.colours.black};
@@ -68,13 +65,15 @@ const ChatWrapper = styled.div`
     }
 `;
 
-export const Room = () => {
+export const Room = ({ roomID }) => {
 
     const connection = useRef(new window.RTCMultiConnection());
     const grid = useRef(null);
     const [streams, setStreams] = useState();
-
+    const loc = useLocation();
     useEffect(() => {
+        console.log(loc.state);
+
         connection.current.socketURL = "https://localhost:9001/";
         connection.current.socketMessageEvent = "video-conference-demo";
         connection.current.session = {
@@ -82,20 +81,39 @@ export const Room = () => {
             video: true,
         };
         connection.current.openOrJoin('room1');
+
+        console.log(loc.pathname);
         connection.current.onstream = (event) => {
             console.log(event);
-            setStreams(event.mediaElement);
             console.log(grid.current);
             let a = document.createElement('div')
             a.appendChild(event.mediaElement);
             grid.current.append(
-                a.attributes.removeNamedItem('controls')
-                // <VideoContainer src={event.mediaElement} />
+                event.mediaElement
             )
+        }
+        return () => {
+            try {
+                // disconnect with all users
+                connection.current.getAllParticipants().forEach(function (pid) {
+                    connection.disconnectWith(pid);
+                });
+            } catch (e) { }
+            try {
+                // stop all local cameras
+                connection.current.attachStreams.forEach(function (localStream) {
+                    localStream.stop();
+                });
+            } catch (e) { }
+            try {
+                // close socket.io connection
+                connection.current.closeSocket();
+            } catch (e) { }
         }
     }, []);
 
     return (
+
         <RoomWrapper>
             {/* <GridContainer> */}
             <VideoGrid ref={grid}>

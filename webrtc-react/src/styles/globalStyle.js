@@ -18,5 +18,8 @@ const GlobalStyle = createGlobalStyle`
      li {
         list-style: none;
     }
+    video::-webkit-media-controls {
+        display: none;
+    }
 `
 export default GlobalStyle;

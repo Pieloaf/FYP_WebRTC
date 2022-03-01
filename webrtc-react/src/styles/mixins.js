@@ -2,6 +2,11 @@ import { css } from "styled-components";
 import theme from "./theme";
 
 const mixins = {
+    fill: css`
+        width: -webkit-fill-available;
+        width: -moz-available;
+    `,
+
     flexCentre: css`
     display: flex;
     align-items: center;

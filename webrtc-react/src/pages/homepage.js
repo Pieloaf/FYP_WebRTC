@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { FaPhone } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { NavBar } from "../components/Navbar";
@@ -29,7 +28,7 @@ const Body = styled.div`
 const MidContainer = styled.div`
     min-height: 600px;
     height: 80vh;
-    width: -webkit-fill-available;
+    ${mixins.fill};
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -40,7 +39,7 @@ const Title = styled.span`
     display: flex;
     
     padding: 2rem;
-    width: -webkit-fill-available;
+    ${mixins.fill};
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: flex-start;
@@ -57,7 +56,7 @@ const Title = styled.span`
 const Features = styled.div`
     background-color: #1b1a5d;
     height: 100%;
-    width: -webkit-fill-available;
+    ${mixins.fill};
     > ul {
         padding: 30px 10px;
         display: flex;
@@ -105,7 +104,7 @@ const Footer = styled.div`
     font-size: ${theme.fontSizes.sm};
     background-color: ${theme.colours.black};
     color: ${theme.colours.white};
-    width: -webkit-fill-available;        
+    ${mixins.fill};
 }`;
 
 export const HomePage = () => {
@@ -118,10 +117,9 @@ export const HomePage = () => {
 
     const getRoomID = (e) => {
         if (!roomID.length) {
-            //generate random base64 string
-            return btoa(Math.random().toString());
+            //random room id
+            setRoomID(Math.random().toString(36).substring(2));
         }
-
         return roomID;
     }
 
@@ -134,7 +132,11 @@ export const HomePage = () => {
                     <StyledInput placeholder="Name" width="300px" />
                     <StyledInput placeholder="Room ID" width="400px" onChange={updateRoomID} />
                     <StyledButton bgColor={theme.colours.teal}>
-                        <Link to={`/room/${getRoomID()}`}>
+                        <Link to={`/room/${getRoomID()}`}
+                            state={{
+                                name: Name,
+                                roomID: getRoomID()
+                            }}>
                             Join room
                         </Link>
                     </StyledButton>
@@ -149,7 +151,7 @@ export const HomePage = () => {
                 </Features>
             </Body>
             <Footer> Pierce Lowe - DT021A - Final Year Project - 2022</Footer>
-        </LandingContainer>
+        </LandingContainer >
     );
 
 }

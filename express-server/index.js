@@ -37,7 +37,7 @@ const corsOptions = {
 }
 
 app.enable('trust proxy');
-app.use(cors(corsOptions));
+app.use(cors());
 
 
 app.use(express.static('build'));
