@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { NavBar } from "../components/Navbar";
 import mixins from "../styles/mixins";
@@ -10,84 +10,44 @@ const LandingContainer = styled.div`
     flex-direction: column;
     background-color: #5854f8;
     color: #F0EFF4;
-    > div {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
+    height: 100vh;
 `;
 
 const Body = styled.div`
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
     , a{
         text-decoration: none;
     }
-`;
-
-const MidContainer = styled.div`
-    min-height: 600px;
-    height: 80vh;
-    ${mixins.fill};
+    height: 100vh;
     padding: 20px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-`
+`;
 
 const Title = styled.span`
-    display: flex;
-    
     padding: 2rem;
-    ${mixins.fill};
     flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: flex-start;
     font-size: ${theme.fontSizes.title};
     font-weight: bold;
     text-align: left;
     text-decoration: underline;
-
     @media screen and (max-width: 499px) {
         font-size: 42px;
     }
     `;
 
-const Features = styled.div`
-    background-color: #1b1a5d;
-    height: 100%;
-    ${mixins.fill};
-    > ul {
-        padding: 30px 10px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-        @media screen and (max-width: 499px) {
-            flex-direction: column;
-            align-items: center;
-        }
-        > li {
-            margin: 16px
-            width: 128px;
-            height: 128px;
-            background-color: ${theme.colours.white};
-            border-radius: 50%;
-            font-size: ${theme.fontSizes.md};
-            color: ${theme.colours.darkBlue};
-        }
-    }
-`;
-
-
-const StyledButton = styled.span`
+const StyledButton = styled.button`
     ${mixins.flexCentre}
     ${mixins.interactive}
     padding: 0.5rem 1.5rem;
     transition: box-shadow 0.3s ease-in;
+    border: none;
     :hover{
+        cursor: pointer;
         box-shadow: 0px 0px 6px 1px #1b1a5d;
     }
+    
 `
 const StyledInput = styled.input`
     ${mixins.flexCentre}
@@ -110,45 +70,42 @@ const Footer = styled.div`
 export const HomePage = () => {
     const [Name, setName] = useState("");
     const [roomID, setRoomID] = useState("");
+    const navigate = useNavigate();
+
+    const getRoomID = () => {
+        let id;
+        if (!roomID.length) {
+            id = Math.random().toString(36).substring(2)
+        }
+        else id = roomID;
+        sessionStorage.setItem(id, JSON.stringify({
+            "name": Name
+        }));
+        return id;
+    }
+
+    const handleJoin = useCallback(() => {
+        let id = getRoomID();
+        console.log(id);
+        navigate(`/room/${id}`, { state: { name: Name, roomId: roomID } }, [navigate]);
+    });
+
+    const updateName = (e) => {
+        setName(e.target.value);
+    }
 
     const updateRoomID = (e) => {
         setRoomID(e.target.value);
-    }
-
-    const getRoomID = (e) => {
-        if (!roomID.length) {
-            //random room id
-            setRoomID(Math.random().toString(36).substring(2));
-        }
-        return roomID;
     }
 
     return (
         <LandingContainer>
             <NavBar />
             <Body>
-                <MidContainer>
-                    <Title>Video Conferencing</Title>
-                    <StyledInput placeholder="Name" width="300px" />
-                    <StyledInput placeholder="Room ID" width="400px" onChange={updateRoomID} />
-                    <StyledButton bgColor={theme.colours.teal}>
-                        <Link to={`/room/${getRoomID()}`}
-                            state={{
-                                name: Name,
-                                roomID: getRoomID()
-                            }}>
-                            Join room
-                        </Link>
-                    </StyledButton>
-                </MidContainer>
-                <Features>
-                    <h1> Features </h1>
-                    <ul>
-                        <li>Live Video Chat</li>
-                        <li>Peer to Peer Connection</li>
-                        <li>Beep Boop</li>
-                    </ul>
-                </Features>
+                <Title>Start a Meeting!</Title>
+                <StyledInput placeholder="Name" width="300px" onChange={updateName} />
+                <StyledInput placeholder="Room ID" width="400px" onChange={updateRoomID} />
+                <StyledButton bgColor={theme.colours.teal} onClick={handleJoin}>Join Meeting</StyledButton>
             </Body>
             <Footer> Pierce Lowe - DT021A - Final Year Project - 2022</Footer>
         </LandingContainer >

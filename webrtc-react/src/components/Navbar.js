@@ -39,7 +39,7 @@ export const NavBar = () => {
 
     return (
         <NavDiv ref={navRef} className={scrolled ? "scrolled" : ""}>
-            <h1>NavBar</h1>
+            <h1>Video Conferencing</h1>
         </NavDiv>
     )
 }

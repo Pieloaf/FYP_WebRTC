@@ -15,8 +15,8 @@ This will be achieved by using the [RTCMultiConnection](https://github.com/muaz-
 
 ## Entries
 - January
-  - [Log 1 - 26/01/2022](./entries/jan/26012022.md)
-  - [Log 2 - 27/01/2022](./entries/jan/27012022.md)
-  - [Log 3 - 28/01/2022](./entries/jan/28012022.md)
+  - [Log 1 - 3](./entries/jan/)
 - February
-  - [Log 4 - 07/02/2022](./entries/feb/07022022.md)
+  - [Log 4 - 13](./entries/feb/)
+- March
+  - [Log 14 - 22](./entries/mar/)

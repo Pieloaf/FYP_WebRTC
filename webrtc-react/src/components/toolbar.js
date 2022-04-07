@@ -47,30 +47,29 @@ const ToolbarItem = styled.li`
     }
 `;
 
-const toggleChat = () => {
-
-}
-export const Toolbar = () => {
+export const Toolbar = (props) => {
     return (
         <ToolbarContainer>
             <StyledToolbar >
                 <ul>
-                    <ToolbarItem>
+                    <ToolbarItem onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                    }}>
                         <FaShare />
                     </ToolbarItem>
-                    <ToolbarItem>
+                    <ToolbarItem onClick={props.toggleCam}>
                         <FaCamera />
                     </ToolbarItem>
-                    <ToolbarItem>
+                    <ToolbarItem onClick={props.toggleMic} >
                         <FaMicrophone />
                     </ToolbarItem>
-                    <ToolbarItem onClick={toggleChat}>
+                    <ToolbarItem onClick={props.toggleChat}>
                         <FaFacebookMessenger />
                     </ToolbarItem>
-                    <ToolbarItem>
+                    <ToolbarItem onClick={props.record}>
                         <FaCircle />
                     </ToolbarItem>
-                    <ToolbarItem color={theme.colours.pink}>
+                    <ToolbarItem color={theme.colours.pink} onClick={props.leaveCall}>
                         <FaPhone />
                     </ToolbarItem>
                 </ul>

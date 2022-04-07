@@ -1,219 +1,194 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import { Toolbar } from "../components/toolbar";
-import { iceServers, videoConstraints } from "../data/config";
-import history from '../history';
 import styled from "styled-components";
+import { Toolbar } from "../components/toolbar";
+import { useLocation } from "react-router-dom";
 import mixins from "../styles/mixins";
 import theme from "../styles/theme";
 
-function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-        ref.current = value;
-    });
-    return ref.current;
-}
-
-const VideoGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
-    grid-gap: 24px;
-    padding: 24px 24px 64px;
-    ${mixins.fill};
-    place-items: center;
-    @media screen and (max-width: ${theme.breakpoints.tablet}) {
-        grid-template-columns: repeat(auto-fill, minmax(40%, 1fr));
-    }
-    @media screen and (max-width: ${theme.breakpoints.mobile}) {
-        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-    }
-    > video {
-        width: 100%;
-    }
-`;
-
-const RoomWrapper = styled.div`
+const MainContainer = styled.div`
     display: flex;
-    ${mixins.fill};
+    width: 100vw;
     height: 100vh;
-    padding-bottom: ;
     background-color: ${theme.colours.black};
-    @media screen and (max-width: ${theme.breakpoints.mobile}) {
-        align-items: center;
-        justify-content: center;
-    }
 `;
 
-const ChatWrapper = styled.div`
-
-    margin-left:auto;
+const ChatContainer = styled.div`
+    margin-left: auto;
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: 350px;
     min-width: 200px;
     height: 100%;
     background-color: ${theme.colours.darkBlue};
-    @media screen and (max-width: ${theme.breakpoints.mobile}) {
-        display:none;
-        position: absolute;
-        left: 0;
-        width: 100vw;
-        & .active {
-            display: flex;
-        }
+`;
+
+const VideoGrid = styled.div`
+    display: grid;
+    grid-gap: 10px;
+    ${mixins.fill};
+    grid-template-columns: ${props => '1fr '.repeat(props.cols)};
+    grid-template-rows: ${props => '1fr '.repeat(props.rows)};
+    place-items: center;
+    > div {
+        display: flex;
+        width: 100%;
+        height: 100%;
     }
 `;
 
-export const Room = ({ roomID }) => {
+const VideoContainer = styled.div`
+    display: flex;
+    object-fit: ${props => props.fill ? 'fill' : 'contain'};
+    width: 100%;
+`;
 
+const messageBox = styled.div`
+    float: left;
+    width: fill - available;
+    word -break: break-all;
+    padding: 10px;
+    margin: 10px 10px 0;
+    border - radius: 7px;
+    background - color: ${theme.colours.lightBlue};
+    color: ${theme.colours.white};
+    font - size: ${theme.fontSizes.md};
+`;
+
+export const Room = () => {
+
+    const [messages, setMessages] = useState([]);
+    const [chatOpen, setChatOpen] = useState(false);
+    const [camera, setCamera] = useState(null);
+    const [mic, setMic] = useState(null);
+    const [cols, setCols] = useState(1);
+    const [rows, setRows] = useState(1);
+    const [fill, setFill] = useState(false);
+    const [streams, setStreams] = useState([]);
+    const roomID = useLocation().pathname.split('/room/')[1];
+
+    const streamGrid = useRef();
     const connection = useRef(new window.RTCMultiConnection());
-    const grid = useRef(null);
-    const [streams, setStreams] = useState();
-    const loc = useLocation();
+
     useEffect(() => {
-        console.log(loc.state);
+        try {
+            let roomData = JSON.parse(sessionStorage.getItem(roomID));
+            connection.current.extra.name = roomData.name;
+        } catch (e) {
+            let name = prompt('Please enter your name', 'Guest');
+            connection.current.extra.name = name;
+            sessionStorage.setItem(roomID, JSON.stringify({ "name": name }));
+        }
 
-        connection.current.socketURL = "https://localhost:9001/";
-        connection.current.socketMessageEvent = "video-conference-demo";
         connection.current.session = {
-            audio: true,
+            data: true,
             video: true,
+            audio: true
         };
-        connection.current.openOrJoin('room1');
+        connection.current.enableFileSharing = true;
 
-        console.log(loc.pathname);
+        connection.current.socketURL = "https://192.168.1.105:9001/";
+        connection.current.openOrJoin(roomID);
+        //     connection.current.onleave = (event) => {
+        //         setStreams(streams.filter((stream) => stream.userid !== event.userid));
+        //         resizeGrid();
+        //     };
+        //     connection.current.onmessage = (event) => {
+        //         createMessage(event.extra.name, event.data);
+        //     };
+        //     connection.current.onopen = (event) => {
+        //         createMessage("System", `${event.extra.name} has joined to the room`);
+        //     };
+        //     connection.current.onleave = (event) => {
+        //         createMessage("System", `${event.extra.name} has left the room`);
+        //     };
+        //     window.addEventListener("resize", resizeGrid);
+    }, [roomID]);
+
+    useEffect(() => {
+        const createMessage = (user, message) => {
+            let msgObj = {
+                user: user,
+                message: message,
+            }
+            setMessages(messages => [...messages, msgObj]);
+        };
+
         connection.current.onstream = (event) => {
-            console.log(event);
-            console.log(grid.current);
-            let a = document.createElement('div')
-            a.appendChild(event.mediaElement);
-            grid.current.append(
-                event.mediaElement
-            )
-        }
-        return () => {
-            try {
-                // disconnect with all users
-                connection.current.getAllParticipants().forEach(function (pid) {
-                    connection.disconnectWith(pid);
-                });
-            } catch (e) { }
-            try {
-                // stop all local cameras
-                connection.current.attachStreams.forEach(function (localStream) {
-                    localStream.stop();
-                });
-            } catch (e) { }
-            try {
-                // close socket.io connection
-                connection.current.closeSocket();
-            } catch (e) { }
-        }
+            setStreams(streams => [...streams, event]);
+            // resizeGrid();
+        };
     }, []);
 
+    useEffect(() => {
+        let userIDs = []
+        streams.forEach((stream) => {
+            if (userIDs.find((id) => id === stream.userid)) {
+                return
+            } else {
+                userIDs.push(stream.userid);
+                stream.mediaElement.style.objectFit = fill ? 'cover' : 'contain';
+                streamGrid.current.appendChild(stream.mediaElement);
+            }
+        });
+
+    }, [streams, fill]);
+
+    useEffect(() => {
+
+        const resizeGrid = () => {
+            let tempCols = cols;
+            let tempRows = rows;
+            if (streams.length <= tempCols) {
+                if (streams.length <= (tempCols - 1) ** 2) tempCols--;
+            } else tempCols++;
+
+            for (let i = 1; i <= tempCols; i++) {
+                if (streams.length <= i * tempCols) {
+                    tempRows = i;
+                    break;
+                }
+            }
+            setFill(streamGrid.current.clientWidth < streamGrid.current.clientHeight);
+
+            setCols(tempCols);
+            setRows(tempRows);
+        };
+
+        resizeGrid();
+    }, [streams]);
+    // window.addEventListener("resize", resizeGrid);
+
+    const displayMessages = () => {
+        return messages.map((message, index) => {
+            <messageBox key={index}>
+                {message.user}: {message.message}
+            </messageBox>
+        });
+    };
+
     return (
-
-        <RoomWrapper>
-            {/* <GridContainer> */}
-            <VideoGrid ref={grid}>
-                {/* unpack streams array of elements */}
-
+        <MainContainer>
+            <Toolbar
+                toggleChat={() => setChatOpen(!chatOpen)}
+                toggleCam={() => { console.log("toggle cam") }}
+                toggleMic={() => { console.log("toggle mic") }}
+                record={() => { console.log("record") }}
+            />
+            <VideoGrid
+                ref={streamGrid}
+                cols={fill ? rows : cols}
+                rows={fill ? cols : rows}
+            >
             </VideoGrid>
-            {/* </GridContainer> */}
-            <ChatWrapper />
-            <Toolbar />
-        </RoomWrapper>
+            <ChatContainer>
+                {displayMessages()}
+                <div>
+                    <input type="text" />
+                    <button>Send</button>
+                </div>
+            </ChatContainer>
+        </MainContainer>
     )
-    // const [streamOpts, setStreamOpts] = useState({
-    //     resolution: 0,
-    //     bitrate: 512,
-    //     isMicOn: true,
-    //     isCamOn: true,
-    // })
-    // const [roomID, setRoomID] = useState(useParams().roomID || null);
 
-    // const [streams, setStreams] = useState([]);
 
-    // const prevStreamOpts = usePrevious(streamOpts);
-    // const connection = useRef(new window.RTCMultiConnection());
-
-    // useEffect(() => {
-    //     function initConnection() {
-    //         connection.current.socketMessageEvent = "webrtc-react-app"
-    //         connection.current.mediaConstraints = {
-    //             video: videoConstraints[streamOpts.resolution],
-    //             audio: true,
-    //         }
-    //         connection.current.session = {
-    //             audio: streamOpts.isMicOn,
-    //             video: streamOpts.isCamOn,
-    //             screen: true
-    //         }
-    //         connection.current.onstream = (event) => {
-    //             console.log(event);
-    //             setStreams([...streams.streams, event.stream])
-    //         }
-    //         connection.current.processSdp = (sdp) => {
-    //             let CodecsHandler = connection.current.CodecsHandler;
-    //             var codecs = 'vp8';
-
-    //             sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
-
-    //             sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
-    //                 audio: 512,
-    //                 video: streamOpts.bitrate,
-    //                 screen: streamOpts.bitrate,
-    //             });
-
-    //             sdp = CodecsHandler.setVideoBitrates(sdp, {
-    //                 min: streamOpts.bitrate * 8 * 1024,
-    //                 max: streamOpts.bitrate * 8 * 1024,
-    //             });
-
-    //             return sdp;
-    //         }
-    //         connection.current.iceServers = iceServers;
-    //     };
-    //     //on first render call initConnection
-    //     if (streams.length === 0) {
-    //         initConnection();
-    //     }
-    //     //on every render check if streamOpts changed
-    //     if (prevStreamOpts !== streamOpts) {
-    //         connection.current.mediaConstraints = {
-    //             video: videoConstraints[streamOpts.resolution],
-    //             audio: true,
-    //         }
-    //         connection.current.session = {
-    //             audio: streamOpts.isMicOn,
-    //             video: streamOpts.isCamOn,
-    //         }
-    //     }
-    // });
-
-    // const handleOpenRoom = () => {
-    //     let roomid = genRanHex(16);
-    //     history.push(`/ room / ${ roomid }?open = true`);
-    // }
-    // // if (open) {
-    // //     return (
-    // //         <div className="room-container">
-    // //             <Toolbar />
-    // //             <VideoContainer streams={streams} />
-    // //         </div>
-    // //     )
-    // // }
-    // return (
-
-    //     <div>
-    //         <h1>Room</h1>
-    //         <VideoContainer streams={streams} />
-    //         {streams.length ? <Toolbar /> : <button onClick={() => {
-    //             handleOpenRoom()
-    //         }
-    //         }>Open New Room</button>}
-    //     </div >
-    // );
 }
-

@@ -1,6 +1,6 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import { Room } from './pages/room';
+import { Room } from './pages/room.js';
 import { HomePage } from './pages/homepage';
 import GlobalStyle from "./styles/globalStyle";
 
