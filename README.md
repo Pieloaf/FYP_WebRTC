@@ -1,5 +1,7 @@
 # Final Year Project - Web-based video conferencing application using WebRTC
 
+## Notes on installation and build
+
 To setup the project run
 `npm install` in both the webrtc-react and express-server directories.
 
@@ -21,5 +23,8 @@ You can start the express server with `node .` in the express-server directory.
 
 There are small bugs here and there, oops :)
 
+## Other Stuff 
+
 Log book moved to [here](https://pieloaf.github.io/WebRTC-Project-Logbook/)
 
+View the project report [here](./C18319993_Pierce_Lowe_report.pdf)
