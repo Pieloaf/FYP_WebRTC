@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import theme from "../styles/theme";
 
 const NavDiv = styled.div`
     position: fixed;
@@ -11,7 +12,7 @@ const NavDiv = styled.div`
     align-items: center;
     padding: 1rem;
     color: #F0EFF4;
-    transition: background-color 0.3s ease-out;
+    transition: ${theme.transition}
     &.scrolled {
         background-color: #1b1a5d;
     }

@@ -2,6 +2,7 @@ import { createGlobalStyle } from "styled-components";
 import theme from "./theme";
 
 const GlobalStyle = createGlobalStyle`
+    /* remove link high lighting */
     a {
         text-decoration: none;
         :visited, 
@@ -9,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
             color: ${theme.colours.darkBlue};
         }
     }
+    /* remove defualt list styles */
     ul
     {
         margin: 0;
@@ -18,6 +20,8 @@ const GlobalStyle = createGlobalStyle`
      li {
         list-style: none;
     }
+
+    /* hide media controls for streams*/
     video::-webkit-media-controls {
         display: none;
     }

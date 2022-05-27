@@ -23,20 +23,7 @@ const theme = {
         title: `64px`
     },
 
-    transition: `all 0.3s ease-in-out`,
-
-    borderRadii: {
-        round: `50%`,
-        slight: `7px`
-    },
-
-    breakpoints: {
-        mobile: `600px`,
-        tablet: `960px`,
-        desktop: `1200px`,
-    },
-
-
+    transition: `all 0.2s ease-in-out`,
 }
 
 export default theme;
