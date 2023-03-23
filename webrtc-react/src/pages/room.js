@@ -103,7 +103,7 @@ export const Room = () => {
         };
 
         // set signalling server address
-        connection.current.socketURL = "https://localhost/"; // only works on local network
+        connection.current.socketURL = window.location.href.split(window.location.pathname)[0]+'/';
         // add custom socket event
         connection.current.setCustomSocketEvent("recording-status");
         // open or join room
